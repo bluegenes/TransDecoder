@@ -68,6 +68,8 @@ my $usage = <<__EOUSAGE__;
 #
 #   --output_dir | -O  <string>            output directory from the TransDecoder.LongOrfs step (default: basename( -t val ) + ".transdecoder_dir")
 #
+#   --final_output_dir  <string>            output directory for the final output files (default: current working directory)
+#
 #   -G <string>                            genetic code (default: universal; see PerlDoc; options: Euplotes, Tetrahymena, Candida, Acetabularia, ...)
 #
 #   --no_refine_starts                     start refinement identifies potential start codons for 5' partial ORFs using a PWM, process on by default.
@@ -159,6 +161,8 @@ my $NO_REFINE_START_CODONS_FLAG = 0;
 
 my $output_dir;
 
+my $final_output_dir;
+
 my $show_version_flag;
 
 
@@ -190,6 +194,8 @@ my $show_version_flag;
              'version' => \$show_version_flag,
 
              'output_dir|O=s' => \$output_dir,
+             
+             'final_output_dir=s' => \$final_output_dir,
                           
              );
 
@@ -333,9 +339,16 @@ main: {
 
     $pipeliner->add_commands(new Command($select_cmd, "select_best_orfs.$checkpoint_hashcode.ok", "Selecting best orfs"));
                 
-    
+    # set final output prefix
     my $prefix_basename = basename($transcripts_file) . ".transdecoder";
-    my $final_output_prefix = "$workdir/$prefix_basename";
+    my $final_output_prefix="$prefix_basename";
+
+    if ($final_output_dir) {
+        $final_output_prefix = "$final_output_dir/$prefix_basename";
+    }
+        if (! -d $final_output_dir) {
+            mkdir($final_output_dir);
+        }
 
     my $target_final_file = "$cds_file.best_candidates.gff3";
     
