@@ -334,7 +334,8 @@ main: {
     $pipeliner->add_commands(new Command($select_cmd, "select_best_orfs.$checkpoint_hashcode.ok", "Selecting best orfs"));
                 
     
-    my $final_output_prefix = basename($transcripts_file) . ".transdecoder";
+    my $prefix_basename = basename($transcripts_file) . ".transdecoder";
+    my $final_output_prefix = "$workdir/$prefix_basename";
 
     my $target_final_file = "$cds_file.best_candidates.gff3";
     
